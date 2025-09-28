@@ -74,6 +74,7 @@
 #include <mono/metadata/w32handle.h>
 #include <mono/metadata/w32error.h>
 #include <mono/utils/w32api.h>
+#include <mono/metadata/mono_hotreload.h>
 
 #ifdef ENABLE_PERFTRACING
 #include <eventpipe/ds-server.h>
@@ -2769,6 +2770,20 @@ ves_icall_System_Reflection_Assembly_LoadFrom (MonoStringHandle fname, MonoBoole
 	}
 
 	result = mono_assembly_get_object_handle (domain, ass, error);
+	if (!&result)
+	{
+		MonoAssemblyName aname = {0};
+		if (mono_assembly_name_parse(mono_string_handle_to_utf8(fname, error), &aname))
+		{
+			MonoAssembly *plug = mono_hr_try_get_loaded_assembly(aname.name);
+			if (plug)
+			{
+				MonoDomain *domain = mono_domain_get();
+				return mono_assembly_get_object_handle(domain, plug, error);
+			}
+		}
+	}
+
 
 leave:
 	g_free (name);
@@ -2825,6 +2840,20 @@ ves_icall_System_Reflection_Assembly_LoadFile_internal (MonoStringHandle fname, 
 	goto_if_nok (error, leave);
 
 	result = mono_assembly_get_object_handle (domain, ass, error);
+
+	if (!&result)
+	{
+		MonoAssemblyName aname = { 0 };
+		if (mono_assembly_name_parse(mono_string_handle_to_utf8(fname, error), &aname))
+		{
+			MonoAssembly *plug = mono_hr_try_get_loaded_assembly(aname.name);
+			if (plug)
+			{
+				MonoDomain *domain = mono_domain_get();
+				return mono_assembly_get_object_handle(domain, plug, error);
+			}
+		}
+	}
 leave:
 	return result;
 }

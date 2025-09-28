@@ -8,7 +8,8 @@
  * (C) 2007 Novell, Inc.
  *
  */
-#ifndef __MONO_UTILS_MONO_INTERNAL_HASH__
+#ifndef __MONO_UTILS_
+_HASH__;
 #define __MONO_UTILS_MONO_INTERNAL_HASH__
 
 /* A MonoInternalHashTable is a hash table that does not allocate hash

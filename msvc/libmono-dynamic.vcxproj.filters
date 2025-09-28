@@ -35,5 +35,16 @@
     <ClCompile Include="..\mono\metadata\oop.c">
       <Filter>Source Files\libmini\unity</Filter>
     </ClCompile>
+    <ClCompile Include="..\mono\metadata\mono_hotreload.c">
+      <Filter>Source Files\libmonoruntime\common</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\mono\metadata\mono_hotreload.h">
+      <Filter>Header Files\libmonoruntime\common</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

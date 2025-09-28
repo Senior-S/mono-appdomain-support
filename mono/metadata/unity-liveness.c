@@ -1,5 +1,6 @@
 #include <config.h>
 #include <glib.h>
+#include <stdint.h>
 #include <mono/metadata/class-internals.h>
 #include <mono/metadata/domain-internals.h>
 #include <mono/metadata/metadata.h>
@@ -260,8 +261,21 @@ static void validate_object_value(MonoObject *val, MonoType *storageType)
 
 static gboolean mono_add_process_object(MonoObject *object, LivenessState *state)
 {
+	gboolean has_references = 0;
+	MonoClass *klass; // Define the class
+
 	if (object && !IS_MARKED(object)) {
-		gboolean has_references = GET_VTABLE(object)->klass->has_references;
+
+		klass = GET_VTABLE(object)->klass; // Get the VTable
+		uintptr_t kaddr = (uintptr_t)klass;
+
+		// Ensure that the class isn't f***ed up. Read: https://en.wikipedia.org/wiki/Hexspeak
+		if (klass == NULL || kaddr == (uintptr_t)0xBAADF00D || kaddr == (uintptr_t)0xFEEEFEEE)
+		{
+			return FALSE;
+		}
+
+		gboolean has_references = klass->has_references;
 		if (has_references || should_process_value(object, state->filter)) {
 			block_array_push_back(state->all_objects, object, state);
 			MARK_OBJ(object);

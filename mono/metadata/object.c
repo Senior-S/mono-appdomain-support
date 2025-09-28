@@ -52,6 +52,7 @@
 #include <mono/utils/mono-threads.h>
 #include <mono/utils/mono-threads-coop.h>
 #include <mono/utils/mono-logger-internals.h>
+#include <mono/metadata/mono_hotreload.h>
 #include "cominterop.h"
 #include <mono/utils/w32api.h>
 #include <mono/utils/unlocked.h>
@@ -839,7 +840,7 @@ mono_runtime_free_method (MonoDomain *domain, MonoMethod *method)
 
 /*
  * The vtables in the root appdomain are assumed to be reachable by other 
- * roots, and we don't use typed allocation in the other domains.
+ * roots, and we don't use typed allocation in the other domains.f
  */
 
 /* The sync block is no longer a GC pointer */
@@ -4984,6 +4985,9 @@ static MonoRuntimeUnhandledExceptionPolicy runtime_unhandled_exception_policy = 
 void
 mono_runtime_unhandled_exception_policy_set (MonoRuntimeUnhandledExceptionPolicy policy)
 {
+	mono_add_internal_call("Rocket.Core.Plugins.Icalls::mono_hr_load_plugin", ves_icall_mono_hr_load_plugin);
+	// Last mono function unity calls before adding their own icalls (mono_runtime_unhandled_exception_policy_set). 
+	// Adding them at runtime doesn't work, so this should be a pretty good place.
 	runtime_unhandled_exception_policy = policy;
 }
 

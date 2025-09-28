@@ -46,6 +46,7 @@
 #include <mono/utils/atomic.h>
 #include <mono/utils/mono-os-mutex.h>
 #include <mono/metadata/mono-private-unstable.h>
+#include <mono/metadata/mono_hotreload.h>
 
 #ifndef HOST_WIN32
 #include <sys/types.h>
@@ -56,6 +57,7 @@
 #ifdef HOST_DARWIN
 #include <mach-o/dyld.h>
 #endif
+
 
 /* AssemblyVersionMap: an assembly name, the assembly version set on which it is based, the assembly name it is replaced with and whether only versions lower than the current runtime version should be remapped */
 typedef struct  {
@@ -350,6 +352,14 @@ static const AssemblyVersionMap framework_assemblies [] = {
 	FACADE_ASSEMBLY ("netstandard"),
 };
 #endif
+
+static MonoAssembly *
+hr_fallback_byname(const MonoAssemblyName *aname)
+{
+	if (!aname || !aname->name)
+		return NULL;
+	return mono_hr_try_get_loaded_assembly(aname->name);
+}
 
 /* keeps track of loaded assemblies, excluding dynamic ones */
 static GList *loaded_assemblies = NULL;
@@ -1975,6 +1985,15 @@ mono_assembly_load_reference (MonoImage *image, int index)
 		image->nreferences = t->rows;
 	}
 	reference = image->references [index];
+	/* Fallback: resolve from assemblies loaded into our plugin domain. */
+	if (reference == NULL && strstr(image->name, "data-"))
+	{
+		MonoAssembly *plug = hr_fallback_byname(&aname);
+		if (plug)
+			if (status)
+				status = MONO_IMAGE_OK;
+			reference = plug;
+	}
 	mono_image_unlock (image);
 	if (reference)
 		return;
@@ -5064,6 +5083,17 @@ mono_assembly_request_byname (MonoAssemblyName *aname, const MonoAssemblyByNameR
 #else
 	result = netcore_load_reference (aname, req->request.alc, req->requesting_assembly, !req->no_postload_search);
 #endif
+	if (!result)
+	{
+		MonoAssembly *plug = hr_fallback_byname(aname);
+		if (plug)
+		{
+			if (status)
+				*status = MONO_IMAGE_OK;
+			return plug;
+		}
+	}
+
 	return result;
 }
 

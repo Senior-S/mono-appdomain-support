@@ -3846,6 +3846,17 @@ mono_class_is_assignable_from (MonoClass *klass, MonoClass *oklass)
 {
 	gboolean result;
 	MONO_ENTER_GC_UNSAFE;
+	if (!mono_class_has_parent(oklass, klass))
+	{
+		if (strstr(klass->image->name, "data-"))
+		{
+			if (!strcmp((oklass)->supertypes [(klass)->idepth - 1]->name, klass->name))
+			{
+				//OutputDebugStringA("mono_class_is_assignable_from(): Class names are equal so true is returned");
+				return TRUE;
+			}
+		}
+	}
 	result = mono_class_is_assignable_from_internal (klass, oklass);
 	MONO_EXIT_GC_UNSAFE;
 	return result;

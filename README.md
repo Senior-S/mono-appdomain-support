@@ -1,3 +1,17 @@
+# Mono with support for app domains (Hot reload)
+
+This custom version of mono adds support for multiple app domains, this allows you to properly unload assemblies at runtime so you can switch assemblies like plugins, modules, etc. without a full restart.
+
+### Hot reload
+The hot reload feature won't work by itself, it adds the require changes for it to work but you will need a custom implementation for it to work.
+An example of this can be found 
+
+> [!WARNING]  
+> Remember to always dismiss any references to unloaded assemblies, if you try to use in any way a unloaded assembly mono will crash.
+
+If you wanna implement this for your game you can find a working implementation I made for Unturned:  
+**[Legally-Distinct-Missile-HR](https://github.com/Senior-S/Legally-Distinct-Missile-HR/blob/master/README.md)**
+
 Unity
 ============================
 This is Unity Technologies fork of the open source mono project.
@@ -106,64 +120,12 @@ Join us on [Discord](https://aka.ms/dotnet-discord) in the `#monovm` channel:
 
 ### Contents
 
-1. [Compilation and Installation](#compilation-and-installation)
-2. [Using Mono](#using-mono)
-3. [Directory Roadmap](#directory-roadmap)
-4. [Contributing to Mono](#contributing-to-mono)
-5. [Reporting bugs](#reporting-bugs)
-6. [Configuration Options](#configuration-options)
-7. [Working with Submodules](#working-with-submodules)
-
-### Build Status
-
-Public CI: [![Azure Pipelines](https://dev.azure.com/dnceng/public/_apis/build/status/mono/mono-ci?branchName=main)](https://dev.azure.com/dnceng/public/_build/latest?definitionId=952&branchName=main)
-
-Legacy Jenkins CI (no longer available publicly):
-
-| OS           | Architecture       | Status                       |
-|--------------|--------------------|------------------------------|
-| Debian 9     | amd64              | [![debian-9-amd64][1]][2]    |
-| Debian 9     | i386               | [![debian-9-i386][3]][4]     |
-| Debian 9     | armel              | [![debian-9-armel][5]][6]    |
-| Debian 9     | armhf              | [![debian-9-armhf][7]][8]    |
-| Debian 9     | arm64              | [![debian-9-arm64][9]][10]   |
-| OS X         | amd64              | [![osx-amd64][11]][12]       |
-| OS X         | i386               | [![osx-i386][13]][14]        |
-| Windows      | amd64              | [![windows-amd64][15]][16]   |
-| Windows      | i386               | [![windows-i386][17]][18]    |
-| CentOS       | s390x (cs)         | [![centos-s390x][19]][20]    |
-| Debian 9     | ppc64el (cs)       | [![debian-9-ppc64el][21]][22]|
-| AIX 6.1      | ppc64 (cs)         | [![aix-ppc64][23]][24]       |
-| FreeBSD 12   | amd64 (cs)         | [![freebsd-amd64][25]][26]   |
-
-_(cs) = community supported architecture_
-
-[1]: https://jenkins.mono-project.com/job/test-mono-mainline-linux/label=debian-9-amd64/badge/icon
-[2]: https://jenkins.mono-project.com/job/test-mono-mainline-linux/label=debian-9-amd64
-[3]: https://jenkins.mono-project.com/job/test-mono-mainline-linux/label=debian-9-i386/badge/icon
-[4]: https://jenkins.mono-project.com/job/test-mono-mainline-linux/label=debian-9-i386/
-[5]: https://jenkins.mono-project.com/job/test-mono-mainline-linux/label=debian-9-armel/badge/icon
-[6]: https://jenkins.mono-project.com/job/test-mono-mainline-linux/label=debian-9-armel/
-[7]: https://jenkins.mono-project.com/job/test-mono-mainline-linux/label=debian-9-armhf/badge/icon
-[8]: https://jenkins.mono-project.com/job/test-mono-mainline-linux/label=debian-9-armhf/
-[9]: https://jenkins.mono-project.com/job/test-mono-mainline-linux/label=debian-9-arm64/badge/icon
-[10]: https://jenkins.mono-project.com/job/test-mono-mainline-linux/label=debian-9-arm64/
-[11]: https://jenkins.mono-project.com/job/test-mono-mainline/label=osx-amd64/badge/icon
-[12]: https://jenkins.mono-project.com/job/test-mono-mainline/label=osx-amd64/
-[13]: https://jenkins.mono-project.com/job/test-mono-mainline/label=osx-i386/badge/icon
-[14]: https://jenkins.mono-project.com/job/test-mono-mainline/label=osx-i386/
-[15]: https://jenkins.mono-project.com/job/z/label=w64/badge/icon
-[16]: https://jenkins.mono-project.com/job/z/label=w64/
-[17]: https://jenkins.mono-project.com/job/z/label=w32/badge/icon
-[18]: https://jenkins.mono-project.com/job/z/label=w32/
-[19]: https://jenkins.mono-project.com/job/test-mono-mainline-community/label=centos-s390x/badge/icon
-[20]: https://jenkins.mono-project.com/job/test-mono-mainline-community/label=centos-s390x
-[21]: https://jenkins.mono-project.com/job/test-mono-mainline-community-chroot/label=debian-9-ppc64el/badge/icon
-[22]: https://jenkins.mono-project.com/job/test-mono-mainline-community-chroot/label=debian-9-ppc64el
-[23]: https://jenkins.mono-project.com/job/test-mono-mainline-community/label=aix-ppc64/badge/icon
-[24]: https://jenkins.mono-project.com/job/test-mono-mainline-community/label=aix-ppc64
-[25]: https://jenkins.mono-project.com/job/test-mono-mainline-community/label=freebsd-12-amd64/badge/icon
-[26]: https://jenkins.mono-project.com/job/test-mono-mainline-community/label=freebsd-12-amd64
+1. [Using Mono](#using-mono)
+2. [Directory Roadmap](#directory-roadmap)
+3. [Contributing to Mono](#contributing-to-mono)
+4. [Reporting bugs](#reporting-bugs)
+5. [Configuration Options](#configuration-options)
+6. [Working with Submodules](#working-with-submodules)
 
 Compilation and Installation
 ============================
