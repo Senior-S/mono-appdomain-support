@@ -12,6 +12,9 @@ An example of this can be found
 If you wanna implement this for your game you can find a working implementation I made for Unturned:  
 **[Legally-Distinct-Missile-HR](https://github.com/Senior-S/Legally-Distinct-Missile-HR/blob/master/README.md)**
 
+
+Based on [this stack overflow anwer](https://stackoverflow.com/a/58640188)
+
 Unity
 ============================
 This is Unity Technologies fork of the open source mono project.
